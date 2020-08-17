@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CardList from '../components/card-list/card-list.component';
 import SearchInput from '../components/search-input/search-input.component';
 import Scroll from '../components/scroll/scroll-component';
+import ErrorBoundary from '../components/error-boundary/error-boundary.component';
 import './App.css';
 
 const App = () => {
@@ -26,7 +27,9 @@ const App = () => {
 			<h1 className='f1'>Robodex</h1>
 			<SearchInput setText={setText} />
 			<Scroll>
-				<CardList users={userArray} />
+				<ErrorBoundary>
+					<CardList users={userArray} />
+				</ErrorBoundary>
 			</Scroll>
 			<h4 className='f5'>&copy; 2020 heplayskeys</h4>
 		</div>
