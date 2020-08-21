@@ -1,31 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { connect } from 'react-redux';
 import CardList from '../components/card-list/card-list.component';
 import SearchInput from '../components/search-input/search-input.component';
 import Scroll from '../components/scroll/scroll-component';
 import ErrorBoundary from '../components/error-boundary/error-boundary.component';
+import { requestRobots } from '../redux/robots/robots.actions';
 import './App.css';
 
-const App = () => {
-	const [text, setText] = useState('');
-	const [users, setUsers] = useState([]);
+const App = props => {
+	const { text, users, isPending, getRobotUsers } = props;
 
 	useEffect(() => {
-		const getUsers = () => {
-			fetch('https://jsonplaceholder.typicode.com/users')
-				.then(res => res.json())
-				.then(usersRes => setUsers(usersRes));
-		};
-		getUsers();
-	}, [users]);
+		getRobotUsers();
+	}, [getRobotUsers]);
 
 	const userArray = text
 		? users.filter(user => user.name.toLowerCase().includes(text.toLowerCase()))
 		: users;
 
-	return users.length ? (
+	return !isPending ? (
 		<div className='tc'>
 			<h1 className='f1'>Robodex</h1>
-			<SearchInput setText={setText} />
+			<SearchInput />
 			<Scroll>
 				<ErrorBoundary>
 					<CardList users={userArray} />
@@ -40,4 +36,15 @@ const App = () => {
 	);
 };
 
-export default App;
+const mapStateToProps = state => ({
+	text: state.search.text,
+	users: state.getRobots.users,
+	isPending: state.getRobots.isPending,
+	error: state.getRobots.error
+});
+
+const mapDispatchToProps = dispatch => ({
+	getRobotUsers: () => dispatch(requestRobots())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
